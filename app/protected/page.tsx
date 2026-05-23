@@ -2,33 +2,31 @@ import { cookies } from "next/headers"
 import { verifyToken } from "@/lib/jwt"
 import { redirect } from "next/navigation"
 
-export default async function AdminPage() {
+export default async function UserPage() {
   const cookieStore = await cookies()
   const token = cookieStore.get("token")?.value
   if (!token) redirect("/auth")
 
   const payload = verifyToken(token) as { email: string; role: string } | null
-  if (!payload || payload.role !== "admin") redirect("/protected")
+  if (!payload) redirect("/auth")
 
   return (
     <div style={{
       minHeight: "100vh", display: "flex",
       alignItems: "center", justifyContent: "center",
-      background: "#1a1a2e", fontFamily: "sans-serif",
+      background: "#f5f5f5", fontFamily: "sans-serif",
     }}>
       <div style={{
         background: "#fff", borderRadius: 16,
         padding: "40px 36px", width: "100%", maxWidth: 400,
-        boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
       }}>
-        <h1 style={{ fontSize: 22, fontWeight: 600, margin: "0 0 8px", color: "#111" }}>
-          Admin Panel
-        </h1>
+        <h1 style={{ fontSize: 22, fontWeight: 600, margin: "0 0 8px" }}>Welcome!</h1>
         <p style={{ fontSize: 14, color: "#666", margin: "0 0 4px" }}>
-          Email: <strong>{payload.email}</strong>
+          Logged in as: <strong>{payload.email}</strong>
         </p>
         <p style={{ fontSize: 14, color: "#666", margin: "0 0 24px" }}>
-          Role: <strong style={{ color: "red" }}>{payload.role}</strong>
+          Role: <strong>{payload.role}</strong>
         </p>
         <form action="/api/auth/logout" method="POST">
           <button style={{
